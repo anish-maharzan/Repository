@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Respository.API.Data;
-using Respository.API.Repositories.Interface;
-
+using Respository.API.Repositories.Abstraction;
 namespace Respository.API.Repositories.Implementation
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
@@ -23,26 +22,36 @@ namespace Respository.API.Repositories.Implementation
             return await _dbset.ToListAsync();
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
             await _dbset.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public async Task UpdateAsync(T entity)
+        public async Task<T?> UpdateAsync(int id, T entity)
         {
+            var existingEntity = await GetByIdAsync(id);
+            if (existingEntity == null)
+            {
+                return null;
+            }
             _dbset.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<T?> DeleteAsync(int id)
         {
             var entity = await GetByIdAsync(id);
-            if (entity != null)
+            if (entity == null)
             {
-                _dbset.Remove(entity);
+                return null;
             }
+            _dbset.Remove(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
     }
 }

@@ -1,5 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Respository.API.Data;
+using Respository.API.Mapping;
+using Respository.API.Repositories.Abstraction;
+using Respository.API.Repositories.Implementation;
+using Respository.API.Services;
+using Respository.API.Services.Abstraction;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +17,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+builder.Services.AddScoped<IStudentService, StudentService>();
 
 var app = builder.Build();
 
