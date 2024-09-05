@@ -49,7 +49,7 @@ namespace Respository.API.Controllers
 
             var studentDto = mapper.Map<StudentDTO>(student);
 
-            return CreatedAtAction(nameof(GetById), new { id = studentDto.StudentID }, studentDto);
+            return CreatedAtAction(nameof(GetStudentById), new { id = studentDto.StudentID }, studentDto);
         }
 
         [HttpPut]
